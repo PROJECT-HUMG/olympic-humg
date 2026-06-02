@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
-  // ── Validation & Request ──
+  // Validation & Request
   VALIDATION_ERROR(
       HttpStatus.BAD_REQUEST.value(), "VALIDATION_ERROR", "Validation failed for input data."),
   MISSING_PARAMETER(
@@ -20,7 +20,7 @@ public enum ErrorCode {
   HTTP_MESSAGE_NOT_READABLE(
       HttpStatus.BAD_REQUEST.value(), "HTTP_MESSAGE_NOT_READABLE", "Malformed JSON request."),
 
-  // ── Auth ──
+  // Auth
   UNAUTHORIZED(HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED", "Full authentication is required."),
   BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED.value(), "BAD_CREDENTIALS", "Invalid email or password."),
   ACCESS_TOKEN_EXPIRED(
@@ -42,13 +42,14 @@ public enum ErrorCode {
       "OAUTH_PASSWORD_NOT_ALLOWED",
       "Password change is not available for OAuth accounts."),
 
-  // ── User & Email ──
+  // User & Email
   EMAIL_NOT_FOUND(
       HttpStatus.NOT_FOUND.value(), "EMAIL_NOT_FOUND", "No user found with the provided email."),
   USER_NOT_FOUND(
       HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND", "No user found with the provided ID."),
-  RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "RESOURCE_NOT_FOUND", "Resources not found."),
-  EMAIL_ALREADY(HttpStatus.CONFLICT.value(), "EMAIL_ALREADY_EXISTS", "Email is already in use."),
+  RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "RESOURCE_NOT_FOUND", "Resource not found."),
+  EMAIL_ALREADY_EXISTS(
+      HttpStatus.CONFLICT.value(), "EMAIL_ALREADY_EXISTS", "Email is already in use."),
   USERNAME_ALREADY_EXISTS(
       HttpStatus.CONFLICT.value(), "USERNAME_ALREADY_EXISTS", "Username is already in use."),
   CANNOT_DELETE_SELF(
@@ -58,10 +59,10 @@ public enum ErrorCode {
       "CANNOT_MODIFY_SUPER_ADMIN",
       "Cannot modify or disable a Super Admin account."),
 
-  // ── OTP ──
+  // OTP
   INVALID_OTP(HttpStatus.BAD_REQUEST.value(), "INVALID_OTP", "OTP is invalid or has expired."),
 
-  // ── HTTP / Infrastructure ──
+  // HTTP / Infrastructure
   METHOD_NOT_ALLOWED(
       HttpStatus.METHOD_NOT_ALLOWED.value(), "METHOD_NOT_ALLOWED", "Request method not supported."),
   UNSUPPORTED_MEDIA_TYPE(

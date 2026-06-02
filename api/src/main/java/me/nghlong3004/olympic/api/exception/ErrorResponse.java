@@ -10,6 +10,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ErrorResponse(
     String message, int status, String code, List<String> details, Long retryAfterSeconds) {
+  public ErrorResponse {
+    if (details != null) {
+      details = List.copyOf(details);
+    }
+  }
+
   public ErrorResponse(String message, int status, String code) {
     this(message, status, code, null, null);
   }

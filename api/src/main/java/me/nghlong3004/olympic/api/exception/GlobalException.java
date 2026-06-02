@@ -3,6 +3,7 @@ package me.nghlong3004.olympic.api.exception;
 import jakarta.validation.ConstraintViolationException;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -28,9 +29,9 @@ public class GlobalException {
 
   @ExceptionHandler(ResourceException.class)
   public ResponseEntity<ErrorResponse> handleResourceException(final ResourceException e) {
-    log.warn("Resource exception occurred: {}", e.getMessage());
-    final var errorCode = e.getResponse();
-    return new ResponseEntity<>(errorCode, HttpStatus.valueOf(errorCode.status()));
+    final var response = e.getResponse();
+    log.warn("Application error [{}]: {}", response.code(), response.message());
+    return buildResponse(response);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -140,7 +141,14 @@ public class GlobalException {
   }
 
   private ResponseEntity<ErrorResponse> buildResponse(ErrorCode errorCode) {
-    return new ResponseEntity<>(
-        errorCode.toErrorResponse(), HttpStatus.valueOf(errorCode.getStatus()));
+    return buildResponse(errorCode.toErrorResponse());
+  }
+
+  private ResponseEntity<ErrorResponse> buildResponse(ErrorResponse response) {
+    var responseBuilder = ResponseEntity.status(HttpStatus.valueOf(response.status()));
+    if (response.retryAfterSeconds() != null) {
+      responseBuilder.header(HttpHeaders.RETRY_AFTER, response.retryAfterSeconds().toString());
+    }
+    return responseBuilder.body(response);
   }
 }

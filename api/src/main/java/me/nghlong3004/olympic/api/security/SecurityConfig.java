@@ -14,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -33,6 +34,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -50,11 +52,17 @@ public class SecurityConfig {
   private static final String COMMON_PATH = "/api";
   private static final String API_VERSION = "/v1";
   private static final String API_BASE_PATH = COMMON_PATH + API_VERSION;
+  private static final String ACCESS_TOKEN_COOKIE_NAME = "access_token";
+
   private static final String[] API_POST_PUBLIC = {
     API_BASE_PATH + "/auth/login", API_BASE_PATH + "/auth/register",
   };
 
   private static final String[] API_GET_PUBLIC = {};
+
+  private static final String[] OAUTH2_PATHS = {
+    API_BASE_PATH + "/oauth2/authorization/*", API_BASE_PATH + "/login/oauth2/code/*",
+  };
 
   private static final String[] SWAGGER_PATHS = {};
 
@@ -72,7 +80,34 @@ public class SecurityConfig {
   private final ProviderAwareOAuth2UserService providerAwareOAuth2UserService;
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) {
+  @Order(1)
+  public SecurityFilterChain oauth2LoginFilterChain(HttpSecurity http) {
+    http.securityMatcher(oauth2PublicMatcher())
+        .csrf(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+        .oauth2Login(
+            oauth2 ->
+                oauth2
+                    .authorizationEndpoint(
+                        authorization ->
+                            authorization.baseUri(API_BASE_PATH + "/oauth2/authorization"))
+                    .redirectionEndpoint(
+                        redirection -> redirection.baseUri(API_BASE_PATH + "/login/oauth2/code/*"))
+                    .userInfoEndpoint(
+                        userInfo -> userInfo.userService(providerAwareOAuth2UserService))
+                    .successHandler(oAuth2LoginSuccessHandler))
+        .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+    return http.build();
+  }
+
+  @Bean
+  @Order(2)
+  public SecurityFilterChain apiFilterChain(HttpSecurity http) {
     http.csrf(
             csrf ->
                 csrf.ignoringRequestMatchers(INTERNAL_PATHS)
@@ -98,17 +133,6 @@ public class SecurityConfig {
                     .permitAll()
                     .anyRequest()
                     .authenticated())
-        .oauth2Login(
-            oauth2 ->
-                oauth2
-                    .authorizationEndpoint(
-                        authorization ->
-                            authorization.baseUri(API_BASE_PATH + "/oauth2/authorization"))
-                    .redirectionEndpoint(
-                        redirection -> redirection.baseUri(API_BASE_PATH + "/login/oauth2/code/*"))
-                    .userInfoEndpoint(
-                        userInfo -> userInfo.userService(providerAwareOAuth2UserService))
-                    .successHandler(oAuth2LoginSuccessHandler))
         .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
         .oauth2ResourceServer(
             oauth2 ->
@@ -117,7 +141,7 @@ public class SecurityConfig {
                     .bearerTokenResolver(bearerTokenResolver())
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
         .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     return http.build();
   }
 
@@ -135,7 +159,7 @@ public class SecurityConfig {
 
       if (request.getCookies() != null) {
         for (Cookie cookie : request.getCookies()) {
-          if ("access_token".equals(cookie.getName()) && !cookie.getValue().isBlank()) {
+          if (ACCESS_TOKEN_COOKIE_NAME.equals(cookie.getName()) && !cookie.getValue().isBlank()) {
             return cookie.getValue();
           }
         }
@@ -195,9 +219,17 @@ public class SecurityConfig {
   }
 
   private RequestMatcher[] apiPostPublicMatchers() {
-    RequestMatcher[] matchers = new RequestMatcher[API_POST_PUBLIC.length];
-    for (int i = 0; i < API_POST_PUBLIC.length; i++) {
-      matchers[i] = PathPatternRequestMatcher.pathPattern(HttpMethod.POST, API_POST_PUBLIC[i]);
+    return pathMethodMatchers(HttpMethod.POST, API_POST_PUBLIC);
+  }
+
+  private RequestMatcher oauth2PublicMatcher() {
+    return new OrRequestMatcher(pathMethodMatchers(HttpMethod.GET, OAUTH2_PATHS));
+  }
+
+  private RequestMatcher[] pathMethodMatchers(HttpMethod method, String[] paths) {
+    RequestMatcher[] matchers = new RequestMatcher[paths.length];
+    for (int i = 0; i < paths.length; i++) {
+      matchers[i] = PathPatternRequestMatcher.pathPattern(method, paths[i]);
     }
     return matchers;
   }
