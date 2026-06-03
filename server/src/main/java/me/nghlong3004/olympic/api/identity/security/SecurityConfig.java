@@ -55,7 +55,16 @@ public class SecurityConfig {
   private static final String ACCESS_TOKEN_COOKIE_NAME = "access_token";
 
   private static final String[] API_POST_PUBLIC = {
-    API_BASE_PATH + "/auth/login", API_BASE_PATH + "/auth/register",
+    API_BASE_PATH + "/auth/login",
+    API_BASE_PATH + "/auth/register",
+    API_BASE_PATH + "/auth/refresh",
+  };
+
+  private static final String[] API_POST_CSRF_IGNORED = {
+    API_BASE_PATH + "/auth/login",
+    API_BASE_PATH + "/auth/register",
+    API_BASE_PATH + "/auth/refresh",
+    API_BASE_PATH + "/auth/logout",
   };
 
   private static final String[] API_GET_PUBLIC = {};
@@ -111,7 +120,7 @@ public class SecurityConfig {
     http.csrf(
             csrf ->
                 csrf.ignoringRequestMatchers(INTERNAL_PATHS)
-                    .ignoringRequestMatchers(apiPostPublicMatchers())
+                    .ignoringRequestMatchers(apiPostCsrfIgnoredMatchers())
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .addFilterAfter(csrfCookieFilter(), CsrfFilter.class)
         .formLogin(AbstractHttpConfigurer::disable)
@@ -218,8 +227,8 @@ public class SecurityConfig {
     };
   }
 
-  private RequestMatcher[] apiPostPublicMatchers() {
-    return pathMethodMatchers(HttpMethod.POST, API_POST_PUBLIC);
+  private RequestMatcher[] apiPostCsrfIgnoredMatchers() {
+    return pathMethodMatchers(HttpMethod.POST, API_POST_CSRF_IGNORED);
   }
 
   private RequestMatcher oauth2PublicMatcher() {

@@ -3,7 +3,7 @@ package me.nghlong3004.olympic.api.identity.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,7 +31,7 @@ public class ApplicationConfig {
   }
 
   @Bean
-  @ConditionalOnMissingBean(UserDetailsService.class)
+  @ConditionalOnProperty(name = "olympic.auth.enabled", havingValue = "false")
   public UserDetailsService userDetailsService() {
     return username -> {
       throw new UsernameNotFoundException("User not found: " + username);

@@ -28,6 +28,8 @@ spring:
             redirect-uri: "{baseUrl}/api/v1/login/oauth2/code/{registrationId}"
 
 olympic:
+  auth:
+    enabled: false
   api:
     problem-type-base-url: http://localhost:8080/api/v1/problems
   client:
