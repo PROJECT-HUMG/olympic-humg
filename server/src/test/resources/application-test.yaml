@@ -35,6 +35,7 @@ olympic:
   security:
     jwt:
       secret-key: test-secret-key-test-secret-key-test-secret-key
+      access-expiration: 15
       refresh-expiration: 10080
     cookie:
       secure: false

@@ -50,6 +50,7 @@ olympic:
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
+      access-expiration: ${JWT_ACCESS_EXPIRATION_MINUTES:15}
       refresh-expiration: ${JWT_REFRESH_EXPIRATION_MINUTES:10080}
     cookie:
       secure: true
