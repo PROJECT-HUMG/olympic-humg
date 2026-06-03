@@ -48,10 +48,24 @@ public enum ErrorCode {
   USER_NOT_FOUND(
       HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND", "No user found with the provided ID."),
   RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "RESOURCE_NOT_FOUND", "Resource not found."),
+  RESOURCE_CONFLICT(
+      HttpStatus.CONFLICT.value(), "RESOURCE_CONFLICT", "Resource state or data conflicts."),
   EMAIL_ALREADY_EXISTS(
       HttpStatus.CONFLICT.value(), "EMAIL_ALREADY_EXISTS", "Email is already in use."),
   USERNAME_ALREADY_EXISTS(
       HttpStatus.CONFLICT.value(), "USERNAME_ALREADY_EXISTS", "Username is already in use."),
+  BUSINESS_RULE_VIOLATION(
+      422,
+      "BUSINESS_RULE_VIOLATION",
+      "Request violates a business rule."),
+  ATTEMPT_ALREADY_SUBMITTED(
+      HttpStatus.CONFLICT.value(),
+      "ATTEMPT_ALREADY_SUBMITTED",
+      "This attempt has already been submitted and cannot be submitted again."),
+  EXAM_HAS_NO_QUESTIONS(
+      422,
+      "EXAM_HAS_NO_QUESTIONS",
+      "Exam must have at least one question before publishing."),
   CANNOT_DELETE_SELF(
       HttpStatus.BAD_REQUEST.value(), "CANNOT_DELETE_SELF", "You cannot disable your own account."),
   CANNOT_MODIFY_SUPER_ADMIN(
@@ -90,6 +104,7 @@ public enum ErrorCode {
       case FORBIDDEN -> "Forbidden";
       case NOT_FOUND -> "Resource Not Found";
       case CONFLICT -> "Resource Conflict";
+      case UNPROCESSABLE_ENTITY -> "Business Rule Violation";
       case METHOD_NOT_ALLOWED -> "Method Not Allowed";
       case UNSUPPORTED_MEDIA_TYPE -> "Unsupported Media Type";
       case TOO_MANY_REQUESTS -> "Too Many Requests";
