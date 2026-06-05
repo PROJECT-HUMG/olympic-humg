@@ -5,13 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author nghlong3004 (Nguyen Hoang Long)
- * @since 5/23/2026
+ * @since 6/5/2026
  */
 @SpringBootApplication
-public class ApiApplication {
+public class ServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ApiApplication.class, args);
+		SpringApplication.run(ServerApplication.class, args);
 	}
 
 }
