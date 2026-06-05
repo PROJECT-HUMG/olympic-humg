@@ -1,9 +1,13 @@
 package me.nghlong3004.olympic.api.config;
 
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -17,7 +21,7 @@ import java.nio.charset.StandardCharsets;
  * JWT configuration using NimbusJwtEncoder/Decoder with HS256 (HmacSHA256).
  *
  * <p>Secret key is loaded from {@code olympic.security.jwt.secret-key} environment variable.
- * Uses {@link ImmutableSecret} for thread-safe, immutable key material.
+ * Uses {@link ImmutableJWKSet} with explicit algorithm to ensure Nimbus can select the signing key.
  *
  * @author nghlong3004
  * @since 2026-06-05
@@ -35,12 +39,16 @@ public class JwtConfig {
 
     @Bean
     public JwtEncoder jwtEncoder(SecretKey secretKey) {
-        return new NimbusJwtEncoder(new ImmutableSecret<>(secretKey));
+        OctetSequenceKey jwk = new OctetSequenceKey.Builder(secretKey)
+                .algorithm(JWSAlgorithm.HS256)
+                .build();
+        return new NimbusJwtEncoder(new ImmutableJWKSet<>(new JWKSet(jwk)));
     }
 
     @Bean
     public JwtDecoder jwtDecoder(SecretKey secretKey) {
         return NimbusJwtDecoder.withSecretKey(secretKey)
+                .macAlgorithm(MacAlgorithm.HS256)
                 .build();
     }
 }
