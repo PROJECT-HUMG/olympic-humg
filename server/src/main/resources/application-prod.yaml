@@ -13,24 +13,17 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope:
-              - email
-              - profile
-            redirect-uri: "{baseUrl}/api/v1/login/oauth2/code/{registrationId}"
-          github:
-            client-id: ${GITHUB_CLIENT_ID}
-            client-secret: ${GITHUB_CLIENT_SECRET}
-            scope:
-              - user:email
-              - read:user
-            redirect-uri: "{baseUrl}/api/v1/login/oauth2/code/{registrationId}"
+  # OAuth2 social login — uncomment when client IDs are configured
+  # security:
+  #   oauth2:
+  #     client:
+  #       registration:
+  #         google:
+  #           client-id: ${GOOGLE_CLIENT_ID}
+  #           client-secret: ${GOOGLE_CLIENT_SECRET}
+  #         github:
+  #           client-id: ${GITHUB_CLIENT_ID}
+  #           client-secret: ${GITHUB_CLIENT_SECRET}
 
 logging:
   level:
@@ -39,7 +32,7 @@ logging:
 
 olympic:
   client:
-    base-url: ${OLYMPIC_CLIENT_BASE_URL}
+    base-url: ${WEB_BASE_URL}
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
