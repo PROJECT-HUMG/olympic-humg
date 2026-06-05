@@ -62,26 +62,28 @@ public class User extends SoftDeletableEntity {
     private Role role;
 
     @Column(name = "enabled", nullable = false)
+    @Builder.Default
     private boolean enabled = true;
 
     @Column(name = "email_verified", nullable = false)
+    @Builder.Default
     private boolean emailVerified = false;
 
     /**
      * Creates a new User with required fields.
      *
-     * @param email    user email
+     * @param email        user email
      * @param passwordHash BCrypt hashed password
-     * @param fullName user full name
-     * @param role     user role
+     * @param fullName     user full name
+     * @param role         user role
      * @return new User instance
      */
     public static User of(String email, String passwordHash, String fullName, Role role) {
-        var user = new User();
-        user.setEmail(email);
-        user.setPasswordHash(passwordHash);
-        user.setFullName(fullName);
-        user.setRole(role);
-        return user;
+        return User.builder()
+                .email(email)
+                .passwordHash(passwordHash)
+                .fullName(fullName)
+                .role(role)
+                .build();
     }
 }

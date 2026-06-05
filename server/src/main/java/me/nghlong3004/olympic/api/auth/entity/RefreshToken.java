@@ -51,9 +51,11 @@ public class RefreshToken {
     private Instant expiresAt;
 
     @Column(name = "revoked", nullable = false)
+    @Builder.Default
     private boolean revoked = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     public boolean isExpired() {
@@ -65,10 +67,10 @@ public class RefreshToken {
     }
 
     public static RefreshToken of(String token, User user, Instant expiresAt) {
-        var rt = new RefreshToken();
-        rt.setToken(token);
-        rt.setUser(user);
-        rt.setExpiresAt(expiresAt);
-        return rt;
+        return RefreshToken.builder()
+                .token(token)
+                .user(user)
+                .expiresAt(expiresAt)
+                .build();
     }
 }

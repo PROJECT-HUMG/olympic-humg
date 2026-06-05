@@ -50,9 +50,11 @@ public class PasswordResetToken {
     private Instant expiresAt;
 
     @Column(name = "used", nullable = false)
+    @Builder.Default
     private boolean used = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     public boolean isExpired() {

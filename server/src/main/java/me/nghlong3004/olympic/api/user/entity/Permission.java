@@ -38,6 +38,7 @@ public class Permission {
     private Long id;
 
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
+    @Builder.Default
     private UUID publicId = UUID.randomUUID();
 
     @Column(name = "name", nullable = false, unique = true, length = 100)
@@ -50,9 +51,11 @@ public class Permission {
     private String description;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
+    @Builder.Default
     private Instant updatedAt = Instant.now();
 
     @Override
