@@ -44,22 +44,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINTS = {
+    private static final String[] PUBLIC_POST_ENDPOINTS = {
             "/api/v1/auth/login",
             "/api/v1/auth/register",
             "/api/v1/auth/refresh",
             "/api/v1/auth/forgot-password",
-            "/api/v1/auth/reset-password",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/v3/api-docs/**",
-            "/actuator/health/**"
+            "/api/v1/auth/reset-password"
     };
 
     private static final String[] PUBLIC_GET_ENDPOINTS = {
             "/api/v1/news/**",
             "/api/v1/subjects/**",
-            "/api/v1/achievements"
+            "/api/v1/achievements",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/actuator/health/**"
     };
 
     @Value("${olympic.client.base-url:http://localhost:3000}")
@@ -78,7 +78,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
