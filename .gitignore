@@ -5,6 +5,10 @@ target/
 !**/src/test/**/target/
 .agents/
 
+### Environment ###
+.env
+!.env.example
+
 ### STS ###
 .apt_generated
 .classpath

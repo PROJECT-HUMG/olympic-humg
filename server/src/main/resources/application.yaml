@@ -1,6 +1,14 @@
+# ===================================================================
+# Shared configuration for all profiles
+# Profile-specific overrides: application-dev.yaml, application-prod.yaml
+# ===================================================================
+
 spring:
   application:
     name: olympic-api
+
+  profiles:
+    default: dev
 
   mvc:
     problem-details:
@@ -8,10 +16,26 @@ spring:
 
   jpa:
     open-in-view: false
+    hibernate:
+      ddl-auto: validate
     properties:
       hibernate:
         default_batch_fetch_size: 16
 
+  flyway:
+    enabled: true
+
   threads:
     virtual:
       enabled: true
+
+# Actuator defaults (profiles may override exposure)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true

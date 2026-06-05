@@ -1,3 +1,8 @@
+# ===================================================================
+# Development profile
+# Activate: --spring.profiles.active=dev (default)
+# ===================================================================
+
 server:
   port: ${SERVER_PORT:8080}
 
@@ -6,12 +11,7 @@ spring:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:olympic_humg_dev}
     username: ${DB_USERNAME:olympic_humg}
     password: ${DB_PASSWORD}
-  flyway:
-    enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    open-in-view: false
+
   security:
     oauth2:
       client:
@@ -31,15 +31,10 @@ spring:
               - read:user
             redirect-uri: "{baseUrl}/api/v1/login/oauth2/code/{registrationId}"
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
-  endpoint:
-    health:
-      probes:
-        enabled: true
+logging:
+  level:
+    me.nghlong3004.olympic: DEBUG
+    org.springframework.security: DEBUG
 
 olympic:
   client:

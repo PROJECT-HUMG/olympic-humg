@@ -1,0 +1,41 @@
+# ===========================================================
+# Docker Compose for local development
+# Usage: docker compose up -d
+# ===========================================================
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:17-alpine
+    container_name: olympic-postgres
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME:-olympic_humg_dev}
+      POSTGRES_USER: ${DB_USERNAME:-olympic_humg}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-olympic_secret}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-olympic_humg} -d ${DB_NAME:-olympic_humg_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis (for caching & rate-limiting — future use)
+  redis:
+    image: redis:7-alpine
+    container_name: olympic-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres-data:
+    driver: local
