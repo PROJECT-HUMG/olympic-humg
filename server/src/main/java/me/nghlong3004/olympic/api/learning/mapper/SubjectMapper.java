@@ -4,6 +4,7 @@ import me.nghlong3004.olympic.api.learning.dto.SubjectResponse;
 import me.nghlong3004.olympic.api.learning.entity.Subject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * MapStruct mapper for {@link Subject} entity and DTOs.
@@ -11,7 +12,7 @@ import org.mapstruct.Mapping;
  * @author nghlong3004
  * @since 2026-06-05
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SubjectMapper {
 
     @Mapping(source = "publicId", target = "id")
