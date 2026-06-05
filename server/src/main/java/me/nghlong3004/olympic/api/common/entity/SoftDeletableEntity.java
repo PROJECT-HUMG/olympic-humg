@@ -29,7 +29,7 @@ import java.time.Instant;
 public abstract class SoftDeletableEntity extends BaseEntity {
 
     @Column(name = "deleted", nullable = false)
-    private boolean deleted = false;
+    private boolean deleted;
 
     @Column(name = "deleted_at")
     private Instant deletedAt;

@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,7 +45,7 @@ public abstract class BaseEntity {
     private Long id;
 
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
-    private UUID publicId = UUID.randomUUID();
+    private UUID publicId;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -61,6 +62,13 @@ public abstract class BaseEntity {
     @LastModifiedBy
     @Column(name = "updated_by")
     private Long updatedBy;
+
+    @PrePersist
+    protected void onCreate() {
+        if (publicId == null) {
+            publicId = UUID.randomUUID();
+        }
+    }
 
     @Override
     public boolean equals(Object o) {
